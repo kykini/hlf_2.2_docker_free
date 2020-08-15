@@ -75,7 +75,7 @@ sudo cp -r crypto-config/peerOrganizations/org1.${NETWORK}/users/* /etc/hyperled
 sudo cp -r crypto-config/peerOrganizations/org2.${NETWORK}/peers/peer0.org2.${NETWORK}/* /etc/hyperledger/msp/peerOrg2/
 sudo cp -r crypto-config/peerOrganizations/org2.${NETWORK}/users/* /etc/hyperledger/msp/users
 
-cp /etc/hyperledger/configtx/genesis.block /etc/hyperledger/fabric/genesisblock
+#cp /etc/hyperledger/configtx/genesis.block /etc/hyperledger/fabric/genesisblock
 
 sudo mv fabric-ca.service /etc/systemd/system/
 sudo systemctl enable fabric-ca.service
