@@ -11,7 +11,7 @@ Environment=FABRIC_LOGGING_SPEC=INFO
 Environment=CA_CFG_PATH=/etc/hyperledger/fabric-ca
 Environment=ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
 Environment=ORDERER_GENERAL_GENESISMETHOD=file
-Environment=ORDERER_GENERAL_BOOTSTRAP=/etc/hyperledger/configtx/genesis.block
+Environment=ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
 Environment=ORDERER_GENERAL_LOCALMSPID=OrdererMSP
 Environment=ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
 Environment=ORDERER_GENERAL_LISTENADDRESS=0.0.0.0

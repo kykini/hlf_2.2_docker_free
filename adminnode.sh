@@ -15,6 +15,9 @@ export CHANNEL_NAME=hypertest
 sudo apt-get update
 sudo apt-get -y upgrade
 sudo apt-get -y install git
+
+git clone https://github.com/kykini/hlf_2.2_docker_free.git
+
 wget https://dl.google.com/go/go1.15.linux-amd64.tar.gz
 tar -xvf go1.15.linux-amd64.tar.gz
 sudo cp -R go /usr/local
@@ -71,6 +74,8 @@ sudo cp -r crypto-config/peerOrganizations/org1.${NETWORK}/users/* /etc/hyperled
 
 sudo cp -r crypto-config/peerOrganizations/org2.${NETWORK}/peers/peer0.org2.${NETWORK}/* /etc/hyperledger/msp/peerOrg2/
 sudo cp -r crypto-config/peerOrganizations/org2.${NETWORK}/users/* /etc/hyperledger/msp/users
+
+cp /etc/hyperledger/configtx/genesis.block /etc/hyperledger/fabric/genesisblock
 
 sudo mv fabric-ca.service /etc/systemd/system/
 sudo systemctl enable fabric-ca.service
