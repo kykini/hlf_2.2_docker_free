@@ -227,8 +227,8 @@ Orderer: &OrdererDefaults
         Consenters:
         - Host: orderer.example.com
           Port: 7050
-          ClientTLSCert: crypto-config/ordererOrganizations/hypertest.com/orderers/orderer.example.com/tls/server.crt
-          ServerTLSCert: crypto-config/ordererOrganizations/hypertest.com/orderers/orderer.example.com/tls/server.crt
+          ClientTLSCert: crypto-config/ordererOrganizations/hypertest.com/orderers/orderer.hypertest.com/tls/server.crt
+          ServerTLSCert: crypto-config/ordererOrganizations/hypertest.com/orderers/orderer.hypertest.com/tls/server.crt
     Addresses:
         - orderer.example.com:7050
 
