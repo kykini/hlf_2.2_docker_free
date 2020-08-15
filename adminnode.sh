@@ -52,6 +52,8 @@ cryptogen generate --config=../hlf_2.2_docker_free/crypto-config.yaml
 mkdir config
 
 cp ../hlf_2.2_docker_free/configtx.yaml .
+cp ../hlf_2.2_docker_free/fabric-ca.service .
+cp ../hlf_2.2_docker_free/fabric-orderer.service .
 
 configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./config/genesis.block -channelID ${CHANNEL_NAME}-sys-channel
 configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./config/${CHANNEL_NAME}.tx -channelID ${CHANNEL_NAME}
@@ -60,7 +62,7 @@ configtxgen -asOrg Org2MSP -channelID ${CHANNEL_NAME} -profile TwoOrgsChannel -o
 
 sudo cp config/* /etc/hyperledger/configtx/
 
-sudo cp -r external-builder /etc/hyperledger/
+sudo cp -r ../hlf_2.2_docker_free/external-builder /etc/hyperledger/
 
 sudo cp -r crypto-config/ordererOrganizations/${NETWORK}/orderers/orderer.${NETWORK}/* /etc/hyperledger/msp/orderer/
 
