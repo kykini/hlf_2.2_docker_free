@@ -45,11 +45,13 @@ sudo cp $GOBIN/fabric-ca-server /usr/local/bin/
 sudo mkdir -p /etc/hyperledger/{configtx,fabric,config,msp}
 sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg1,peerOrg2,users}
 
-cp -R orderer-config/* /etc/hyperledger/fabric/
+cp -R ../hlf_2.2_docker_free/orderer-config/* /etc/hyperledger/fabric/
 
-cryptogen generate --config=./crypto-config.yaml
+cryptogen generate --config=../hlf_2.2_docker_free/crypto-config.yaml
 
 mkdir config
+
+cp ../hlf_2.2_docker_free/configtx.yaml .
 
 configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./config/genesis.block -channelID ${CHANNEL_NAME}-sys-channel
 configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./config/${CHANNEL_NAME}.tx -channelID ${CHANNEL_NAME}
