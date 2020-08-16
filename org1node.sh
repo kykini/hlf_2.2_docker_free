@@ -9,6 +9,9 @@ export ADMIN_IP=192.168.129.145
 export PEER_1_IP=192.168.164.184
 export PEER_2_IP=192.168.163.36
 
+export CHAINCODE_CCID=marbles:d8140fbc1a0903bd88611a96c5b0077a2fdeef00a95c05bfe52e207f5f9ab79d
+export CHAINCODE_ADDRESS=0.0.0.0:7052
+
 echo "$ADMIN_IP orderer.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_1_IP peer0.org1.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_2_IP peer0.org2.hypertest.com" | sudo tee -a /etc/hosts
@@ -33,6 +36,9 @@ sudo scp $USER@$ADMIN_IP:/etc/hyperledger/configtx/hypertest.tx /etc/hyperledger
 sudo scp $USER@$ADMIN_IP:/etc/hyperledger/configtx/Org1MSPanchors.tx /etc/hyperledger/configtx/Org1MSPanchors.tx
 
 mv /etc/hyperledger/fabric/core_org1.yaml /etc/hyperledger/fabric/core.yaml 
+
+cp orderer-config/core_org1.yaml /etc/hyperledger/fabric/core.yaml 
+
 cp -r hlf_2.2_docker_free/external-builder/ /etc/hyperledger/
 chmod -R 777 /etc/hyperledger/external-builder/
 
@@ -76,3 +82,8 @@ peer channel create -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledg
 peer channel join -b hypertest.block
 
 peer channel update -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledger/configtx/Org1MSPanchors.tx
+
+peer channel fetch 0 hypertest.block -c hypertest -o orderer.hypertest.com:7050
+
+peer lifecycle chaincode install marbles-org1.tgz
+peer lifecycle chaincode queryinstalled
