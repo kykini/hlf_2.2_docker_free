@@ -87,7 +87,7 @@ peer channel update -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledg
 
 peer channel fetch 0 hypertest.block -c hypertest -o orderer.hypertest.com:7050
 
-cd hlf_2.2_docker_free/chaincode/packaging
+cd hlf_2.2_docker_free/chaincode/org1/packaging
 tar cfz code.tar.gz connection.json
 tar cfz marbles-org1.tgz code.tar.gz metadata.json
 peer lifecycle chaincode install marbles-org1.tgz
