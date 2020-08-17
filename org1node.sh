@@ -10,7 +10,7 @@ export PEER_1_IP=192.168.164.184
 export PEER_2_IP=192.168.163.36
 
 export CHAINCODE_CCID=marbles:d8140fbc1a0903bd88611a96c5b0077a2fdeef00a95c05bfe52e207f5f9ab79d
-export CHAINCODE_ADDRESS=0.0.0.0:7052
+export CHAINCODE_ADDRESS=peer0.org1.hypertest.com:7052
 
 echo "$ADMIN_IP orderer.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_1_IP peer0.org1.hypertest.com" | sudo tee -a /etc/hosts
@@ -99,5 +99,12 @@ peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --
 
 peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 1 -o orderer.hypertest.com:7050 
 
-peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 1 --init-required --peerAddresses peer0.org1.hypertest.com:7051
+peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 1 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051
+
+
+
+peer chaincode invoke -o orderer.hypertest.com:7050 -C hypertest -n marbles --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051 -c '{"Args":["initMarble","marble1","blue","35","tom"]}' --waitForEvent
+
+
+
 
