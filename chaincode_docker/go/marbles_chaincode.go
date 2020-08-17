@@ -86,7 +86,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"os"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	pb "github.com/hyperledger/fabric-protos-go/peer"
@@ -102,28 +101,15 @@ type marble struct {
 	Color      string `json:"color"`
 	Size       int    `json:"size"`
 	Owner      string `json:"owner"`
-	Owne2      string `json:"owne2"`
 }
 
 // ===================================================================================
 // Main
 // ===================================================================================
 func main() {
-
-	server := &shim.ChaincodeServer{
-		CCID:    os.Getenv("CHAINCODE_CCID"),
-		Address: os.Getenv("CHAINCODE_ADDRESS"),
-		CC:      new(SimpleChaincode),
-		TLSProps: shim.TLSProperties{
-				Disabled: true,
-		},
-	}
-
-	// Start the chaincode external server
-	err := server.Start()
-
+	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
-		fmt.Printf("Error starting Marbles02 chaincode: %s", err)
+		fmt.Printf("Error starting Simple chaincode: %s", err)
 	}
 }
 

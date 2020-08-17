@@ -93,7 +93,7 @@ tar cfz marbles-org1.tgz code.tar.gz metadata.json
 peer lifecycle chaincode install marbles-org1.tgz
 
 export CHAINCODE_CCID=marbles:ac0a93aabd6894dd370519fa1825bb6fb9ba0f0cbf72794dc0bfb6bce917d18d
-export CHAINCODE_ADDRESS=0.0.0.0:7052
+export CHAINCODE_ADDRESS=peer0.org1.hypertest.com:7052
 
 peer lifecycle chaincode queryinstalled
 
@@ -109,7 +109,8 @@ peer lifecycle chaincode queryapproved -C hypertest -n marbles --sequence 4
 
 
 
-peer chaincode invoke -o orderer.hypertest.com:7050 -C hypertest -n marbles --isInit --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051 -c '{"Args":["initMarble","marble1","blue","35","tom"]}' --waitForEvent
+#peer chaincode invoke -o orderer.hypertest.com:7050 -C hypertest -n marbles --isInit --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051 -c '{"Args":["initMarble","marble1","blue","35","tom"]}' --waitForEvent
+peer chaincode invoke -o orderer.hypertest.com:7050 -C hypertest -n marbles --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051 -c '{"Args":["initMarble","marble1","blue","35","tom"]}' --waitForEvent
 
 peer chaincode query -C hypertest -n marbles -c '{"Args":["readMarble","marble1"]}'
 
