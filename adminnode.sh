@@ -39,14 +39,16 @@ echo "$PEER_1_IP peer0.org1.${NETWORK}" | sudo tee -a /etc/hosts
 echo "$PEER_2_IP peer0.org2.${NETWORK}" | sudo tee -a /etc/hosts
 
 mkdir ~/fabric && cd ~/fabric
-curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.2.0 1.4.7
-sudo cp ~/fabric/fabric-samples/bin/* /usr/local/bin/
+#curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.2.0 1.4.7
+#sudo cp ~/fabric/fabric-samples/bin/* /usr/local/bin/
+cp ../hlf_2.2_docker_free/bin/* /usr/local/bin/
+
 
 go get -u github.com/hyperledger/fabric-ca/cmd/...
 sudo cp $GOBIN/fabric-ca-server /usr/local/bin/
 
 sudo mkdir -p /etc/hyperledger/{configtx,fabric,config,msp}
-sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg1,peerOrg2,users}
+sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg1,peerOrg2,users} 
 
 cp -R ../hlf_2.2_docker_free/orderer-config/* /etc/hyperledger/fabric/
 
@@ -63,7 +65,7 @@ configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./config/${CHANNEL_NA
 configtxgen -asOrg Org1MSP -channelID ${CHANNEL_NAME} -profile TwoOrgsChannel -outputAnchorPeersUpdate ./config/Org1MSPanchors.tx
 configtxgen -asOrg Org2MSP -channelID ${CHANNEL_NAME} -profile TwoOrgsChannel -outputAnchorPeersUpdate ./config/Org2MSPanchors.tx
 
-sudo cp config/* /etc/hyperledger/configtx/
+#sudo cp config/* /etc/hyperledger/configtx/
 
 sudo cp -r ../hlf_2.2_docker_free/external-builder /etc/hyperledger/
 

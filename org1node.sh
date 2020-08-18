@@ -9,8 +9,6 @@ export ADMIN_IP=192.168.129.145
 export PEER_1_IP=192.168.164.184
 export PEER_2_IP=192.168.163.36
 
-
-
 echo "$ADMIN_IP orderer.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_1_IP peer0.org1.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_2_IP peer0.org2.hypertest.com" | sudo tee -a /etc/hosts
@@ -24,9 +22,9 @@ sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org1.
 
 sudo rsync -r $USER@$ADMIN_IP:/etc/hyperledger/fabric/msp/ /etc/hyperledger/fabric/msp
 
-sudo scp $USER@$ADMIN_IP:/root/fabric/fabric-samples/config/* /etc/hyperledger/configtx/
+#sudo scp $USER@$ADMIN_IP:/root/fabric/fabric-samples/config/* /etc/hyperledger/configtx/
 
-sudo scp $USER@$ADMIN_IP:/root/fabric/fabric-samples/bin/peer /usr/local/bin
+sudo scp $USER@$ADMIN_IP:/usr/local/bin/peer /usr/local/bin
 
 sudo scp $USER@$ADMIN_IP:/etc/hyperledger/fabric/core_org1.yaml /etc/hyperledger/fabric/
 
@@ -92,20 +90,21 @@ tar cfz code.tar.gz connection.json
 tar cfz marbles-org1.tgz code.tar.gz metadata.json
 peer lifecycle chaincode install marbles-org1.tgz
 
-export CHAINCODE_CCID=marbles:ac0a93aabd6894dd370519fa1825bb6fb9ba0f0cbf72794dc0bfb6bce917d18d
+#Скопировать Chaincode code package identifier в переменную CHAINCODE_CCID
+export CHAINCODE_CCID=marbles:39dc3a272a4e48b9f7937968761d56c19c7f9e0fc6c5476e08c166498431e2ab
 export CHAINCODE_ADDRESS=peer0.org1.hypertest.com:7052
 
 peer lifecycle chaincode queryinstalled
 
-peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --version 1.0 --init-required --package-id ${CHAINCODE_CCID} --sequence 4 -o orderer.hypertest.com:7050
+peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --version 1.0 --init-required --package-id ${CHAINCODE_CCID} --sequence 1 -o orderer.hypertest.com:7050
 
-peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 4 -o orderer.hypertest.com:7050 
+peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 1 -o orderer.hypertest.com:7050 
 
 #После того как Org2 одобрит, нужно выполнить
 
-peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 4 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051
+peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 1 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051
 
-peer lifecycle chaincode queryapproved -C hypertest -n marbles --sequence 4
+peer lifecycle chaincode queryapproved -C hypertest -n marbles --sequence 1
 
 
 

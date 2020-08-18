@@ -102,7 +102,6 @@ type marble struct {
 	Color      string `json:"color"`
 	Size       int    `json:"size"`
 	Owner      string `json:"owner"`
-	Owne2      string `json:"owne2"`
 }
 
 // ===================================================================================

@@ -9,9 +9,6 @@ export ADMIN_IP=192.168.129.145
 export PEER_1_IP=192.168.164.184
 export PEER_2_IP=192.168.163.36
 
-export CHAINCODE_CCID=marbles:d8140fbc1a0903bd88611a96c5b0077a2fdeef00a95c05bfe52e207f5f9ab79d
-export CHAINCODE_ADDRESS=peer0.org2.hypertest.com:7052
-
 echo "$ADMIN_IP orderer.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_1_IP peer0.org1.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_2_IP peer0.org2.hypertest.com" | sudo tee -a /etc/hosts
@@ -25,9 +22,9 @@ sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org2.
 
 sudo rsync -r $USER@$ADMIN_IP:/etc/hyperledger/fabric/msp/ /etc/hyperledger/fabric/msp
 
-sudo scp $USER@$ADMIN_IP:/root/fabric/fabric-samples/config/* /etc/hyperledger/configtx/
+#sudo scp $USER@$ADMIN_IP:/root/fabric/fabric-samples/config/* /etc/hyperledger/configtx/
 
-sudo scp $USER@$ADMIN_IP:/root/fabric/fabric-samples/bin/peer /usr/local/bin
+sudo scp $USER@$ADMIN_IP:/usr/local/bin/peer /usr/local/bin
 
 sudo scp $USER@$ADMIN_IP:/etc/hyperledger/fabric/core_org2.yaml /etc/hyperledger/fabric/
 
@@ -96,19 +93,54 @@ tar cfz marbles-org2.tgz code.tar.gz metadata.json
 
 peer lifecycle chaincode install marbles-org2.tgz
 
-export CHAINCODE_CCID=marbles:368a84faf71a45213d8581671df3b6dce84e7dd58f9b29e24fb3486629620f1e
+export CHAINCODE_CCID=marbles:410625b25b51d4088dd3f62f738f13dee4cb03fd19be74b60298dc1c8b3722b5
 export CHAINCODE_ADDRESS=peer0.org2.hypertest.com:7052
 
 
 #peer lifecycle chaincode install marbles-org2.tgz
 peer lifecycle chaincode queryinstalled --peerAddresses peer0.org2.hypertest.com:7051
 
-peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --version 1.0 --init-required --package-id ${CHAINCODE_CCID} --sequence 4 -o orderer.hypertest.com:7050
+peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --version 1.0 --init-required --package-id ${CHAINCODE_CCID} --sequence 1 -o orderer.hypertest.com:7050
 
-peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 4 -o orderer.hypertest.com:7050 
+peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 1 -o orderer.hypertest.com:7050 
 
-#peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 4 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051
+#peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 1 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051
 
+#Запустить CC как сервис
+
+cd ../
+wget https://dl.google.com/go/go1.15.linux-amd64.tar.gz
+tar -xvf go1.15.linux-amd64.tar.gz
+sudo cp -R go /usr/local
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/Projects/
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+go version
+
+go build -o external-cc
+cp external-cc /usr/local/bin/
+
+cat > external-cc.service << EOF
+# Service definition for Hyperledger fabric CC server
+[Unit]
+Description=hyperledger fabric-peer0-org2 CC Server
+Documentation=https://hyperledger-fabric.readthedocs.io/
+Wants=network-online.target
+After=network-online.target
+[Service]
+Type=simple
+Restart=on-failure
+Environment=CHAINCODE_CCID=${CHAINCODE_CCID}
+Environment=CHAINCODE_ADDRESS=${CHAINCODE_ADDRESS}
+ExecStart=/usr/local/bin/external-cc
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo mv external-cc.service /etc/systemd/system/
+sudo systemctl enable external-cc.service
+sudo systemctl start external-cc.service
+systemctl status external-cc.service
 
 peer chaincode invoke -o orderer.hypertest.com:7050 --isInit -C hypertest -n marbles --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051 -c '{"Args":["initMarble","marble1","blue","35","tom"]}' --waitForEvent
 
