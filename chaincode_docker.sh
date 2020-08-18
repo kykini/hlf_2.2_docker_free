@@ -13,7 +13,7 @@ cd chaincode_docker/go
 GO111MODULE=on go mod vendor
 cd ~/
 
-#в Core.yaml поиенять строчку  runtime: $(BASE_DOCKER_NS)/fabric-baseos:$(ARCH)-$(BASE_VERSION) на  runtime: hyperledger/fabric-baseos:$(ARCH)-2.2.0
+#в Core.yaml поменять строчку  runtime: $(BASE_DOCKER_NS)/fabric-baseos:$(ARCH)-$(BASE_VERSION) на  runtime: hyperledger/fabric-baseos:$(ARCH)-2.2.0
 
 export CCNAME=marblesnew
 
@@ -23,12 +23,12 @@ sudo systemctl start fabric-peer0-org2.service
 systemctl status fabric-peer0-org2.service
 
 #Установить в Org1
-peer lifecycle chaincode package ${CCNAME} .tar.gz --path /root/hlf_2.2_docker_free/chaincode_docker/go --lang golang --label ${CCNAME} 
-peer lifecycle chaincode install ${CCNAME} .tar.gz
+peer lifecycle chaincode package ${CCNAME}.tar.gz --path /root/hlf_2.2_docker_free/chaincode_docker/go --lang golang --label ${CCNAME} 
+peer lifecycle chaincode install ${CCNAME}.tar.gz
 
 #Установить в Org2
-peer lifecycle chaincode package ${CCNAME} .tar.gz --path /root/hlf_2.2_docker_free/chaincode_docker/go --lang golang --label ${CCNAME} 
-peer lifecycle chaincode install ${CCNAME} .tar.gz
+peer lifecycle chaincode package ${CCNAME}.tar.gz --path /root/hlf_2.2_docker_free/chaincode_docker/go --lang golang --label ${CCNAME} 
+peer lifecycle chaincode install ${CCNAME}.tar.gz
 
 
 peer lifecycle chaincode queryinstalled
