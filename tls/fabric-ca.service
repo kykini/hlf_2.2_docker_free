@@ -1,0 +1,16 @@
+# Service definition for Hyperledger fabric-ca server
+[Unit]
+Description=hyperledger fabric-ca server - Certificate Authority for hyperledger fabric
+Documentation=https://hyperledger-fabric-ca.readthedocs.io/
+Wants=network-online.target
+After=network-online.target
+[Service]
+Type=simple
+Restart=on-failure
+Environment=FABRIC_LOGGING_SPEC=INFO
+Environment=FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+Environment=FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+Environment=CA_CFG_PATH=/etc/hyperledger/fabric-ca
+ExecStart=/usr/local/bin/fabric-ca-server start -b admin:adminpw
+[Install]
+WantedBy=multi-user.target
