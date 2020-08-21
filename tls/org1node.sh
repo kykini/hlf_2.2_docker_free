@@ -61,6 +61,10 @@ Environment=CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peerOrg1/msp
 Environment=CORE_PEER_ADDRESS=peer0.org1.hypertest.com:7051
 Environment=CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.hypertest.com:7051
 Environment=CORE_PEER_CHAINCODELISTENADDRESS=localhost:7052
+Environment=CORE_PEER_TLS_ENABLED=true
+Environment=CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/msp/peerOrg1/tls/server.crt
+Environment=CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/msp/peerOrg1/tls/server.key
+Environment=CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/peerOrg1/tls/ca.crt
 ExecStart=/usr/local/bin/peer node start
 [Install]
 WantedBy=multi-user.target

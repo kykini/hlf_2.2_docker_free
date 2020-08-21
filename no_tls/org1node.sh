@@ -106,6 +106,8 @@ peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypert
 
 peer lifecycle chaincode queryapproved -C hypertest -n marbles --sequence 1
 
+peer lifecycle chaincode queryinstalled --peerAddresses peer0.org1.hypertest.com:7051
+
 #Запустить CC как сервис
 
 cd ../

@@ -79,13 +79,13 @@ sudo cp -r crypto-config/peerOrganizations/org2.${NETWORK}/users/* /etc/hyperled
 
 #cp /etc/hyperledger/configtx/genesis.block /etc/hyperledger/fabric/genesisblock
 
-sudo mv fabric-ca.service /etc/systemd/system/
-sudo systemctl enable fabric-ca.service
-sudo systemctl start fabric-ca.service
+#sudo mv fabric-ca.service /etc/systemd/system/
+#sudo systemctl enable fabric-ca.service
+#sudo systemctl start fabric-ca.service
 
 sudo mv fabric-orderer.service /etc/systemd/system/
 sudo systemctl enable fabric-orderer.service
 sudo systemctl start fabric-orderer.service
 
-systemctl status fabric-ca.service
+#systemctl status fabric-ca.service
 systemctl status fabric-orderer.service

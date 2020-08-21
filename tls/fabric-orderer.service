@@ -14,7 +14,13 @@ Environment=ORDERER_GENERAL_GENESISMETHOD=file
 Environment=ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
 Environment=ORDERER_GENERAL_LOCALMSPID=OrdererMSP
 Environment=ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
-Environment=ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+Environment=ORDERER_GENERAL_LISTENADDRESS=0.0.0.0 
+Environment=ORDERER_GENERAL_TLS_ENABLED=true
+Environment=ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/msp/orderer/tls/server.key
+Environment=ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/msp/orderer/tls/server.crt
+Environment=ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/msp/orderer/tls/ca.crt]
+Environment=ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/etc/hyperledger/msp/orderer/tls/server.crt
+Environment=ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/etc/hyperledger/msp/orderer/tls/server.key
 ExecStart=/usr/local/bin/orderer start
 [Install]
 WantedBy=multi-user.target

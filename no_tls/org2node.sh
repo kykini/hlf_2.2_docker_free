@@ -106,6 +106,8 @@ peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbl
 
 #peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 1 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051
 
+peer lifecycle chaincode queryinstalled --peerAddresses peer0.org2.hypertest.com:7051
+
 #Запустить CC как сервис
 
 cd ../

@@ -44,8 +44,8 @@ mkdir ~/fabric && cd ~/fabric
 cp ../hlf_2.2_docker_free/no_tls/bin/* /usr/local/bin/
 
 
-go get -u github.com/hyperledger/fabric-ca/cmd/...
-sudo cp $GOBIN/fabric-ca-server /usr/local/bin/
+#go get -u github.com/hyperledger/fabric-ca/cmd/...
+#sudo cp $GOBIN/fabric-ca-server /usr/local/bin/
 
 sudo mkdir -p /etc/hyperledger/{configtx,fabric,config,msp}
 sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg1,peerOrg2,users} 
@@ -68,10 +68,9 @@ configtxgen -asOrg Org2MSP -channelID ${CHANNEL_NAME} -profile TwoOrgsChannel -o
 #sudo cp config/* /etc/hyperledger/configtx/
 
 sudo cp -r ../hlf_2.2_docker_free/no_tls/external-builder /etc/hyperledger/
-
 sudo cp -r crypto-config/ordererOrganizations/${NETWORK}/orderers/orderer.${NETWORK}/* /etc/hyperledger/msp/orderer/
 
-sudo cp -r crypto-config/peerOrganizations/org1.${NETWORK}/peers/peer0.org1.${NETWORK}/* /etc/hyperledger/msp/peerOrg2/
+sudo cp -r crypto-config/peerOrganizations/org1.${NETWORK}/peers/peer0.org1.${NETWORK}/* /etc/hyperledger/msp/peerOrg1/
 sudo cp -r crypto-config/peerOrganizations/org1.${NETWORK}/users/* /etc/hyperledger/msp/users
 
 sudo cp -r crypto-config/peerOrganizations/org2.${NETWORK}/peers/peer0.org2.${NETWORK}/* /etc/hyperledger/msp/peerOrg2/
@@ -79,9 +78,9 @@ sudo cp -r crypto-config/peerOrganizations/org2.${NETWORK}/users/* /etc/hyperled
 
 #cp /etc/hyperledger/configtx/genesis.block /etc/hyperledger/fabric/genesisblock
 
-sudo mv fabric-ca.service /etc/systemd/system/
-sudo systemctl enable fabric-ca.service
-sudo systemctl start fabric-ca.service
+#sudo mv fabric-ca.service /etc/systemd/system/
+#sudo systemctl enable fabric-ca.service
+#sudo systemctl start fabric-ca.service
 
 sudo mv fabric-orderer.service /etc/systemd/system/
 sudo systemctl enable fabric-orderer.service
