@@ -14,9 +14,12 @@ echo "$PEER_1_IP peer0.org1.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_2_IP peer0.org2.hypertest.com" | sudo tee -a /etc/hosts
 
 sudo mkdir -p /etc/hyperledger/{configtx,fabric,config,msp}
-sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg1,users}
+sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg1,peerOrg2,users}
 
 sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org1.hypertest.com/peers/peer0.org1.hypertest.com/* /etc/hyperledger/msp/peerOrg1/
+sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org2.hypertest.com/peers/peer0.org2.hypertest.com/* /etc/hyperledger/msp/peerOrg2/
+
+sudo rsync -r $USER@$ADMIN_IP:/etc/hyperledger/msp/orderer /etc/hyperledger/msp/
 
 sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org1.hypertest.com/users/ /etc/hyperledger/msp/users
 
@@ -74,20 +77,28 @@ sudo mv fabric-peer0-org1.service /etc/systemd/system/
 sudo systemctl enable fabric-peer0-org1.service
 sudo systemctl start fabric-peer0-org1.service
 systemctl status fabric-peer0-org1.service
+#sudo strings /proc/<PID>/environ
 
 echo 'export CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin\@org1.hypertest.com/msp' | tee -a ~/.bashrc
 echo 'export CORE_PEER_LOCALMSPID=Org1MSP' | tee -a ~/.bashrc
 echo 'export CORE_PEER_ADDRESS=peer0.org1.hypertest.com:7051' | tee -a ~/.bashrc
 echo 'export CORE_PEER_ID=peer0.org1.hypertest.com' | tee -a ~/.bashrc
+echo 'export CERT=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem' | tee -a ~/.bashrc
+
 source ~/.bashrc
 
-peer channel create -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledger/configtx/hypertest.tx
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/msp/peerOrg1/tls/server.crt
+export CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/msp/peerOrg1/tls/server.key
+export CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/peerOrg1/tls/ca.crt
 
-peer channel join -b hypertest.block
+peer channel create -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledger/configtx/hypertest.tx --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
-peer channel update -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledger/configtx/Org1MSPanchors.tx
+peer channel join -o orderer.hypertest.com:7050  -b hypertest.block  --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
-peer channel fetch 0 hypertest.block -c hypertest -o orderer.hypertest.com:7050
+peer channel update -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledger/configtx/Org1MSPanchors.tx  --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
+
+#peer channel fetch 0 hypertest.block -o orderer.hypertest.com:7050 -c hypertest --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
 cd hlf_2.2_docker_free/no_tls/chaincode/org1/packaging
 tar cfz code.tar.gz connection.json
@@ -95,18 +106,18 @@ tar cfz marbles-org1.tgz code.tar.gz metadata.json
 peer lifecycle chaincode install marbles-org1.tgz
 
 #Скопировать Chaincode code package identifier в переменную CHAINCODE_CCID
-export CHAINCODE_CCID=marbles:39dc3a272a4e48b9f7937968761d56c19c7f9e0fc6c5476e08c166498431e2ab
+export CHAINCODE_CCID=marbles:bb395beae419ecd5bb8a4ff4ae9db6f2b06d6e93225593ba888281769f19c7b3
 export CHAINCODE_ADDRESS=peer0.org1.hypertest.com:7052
 
 peer lifecycle chaincode queryinstalled
 
-peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --version 1.0 --init-required --package-id ${CHAINCODE_CCID} --sequence 1 -o orderer.hypertest.com:7050
+peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --version 1.0 --init-required --package-id ${CHAINCODE_CCID} --sequence 1 -o orderer.hypertest.com:7050 --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
-peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 1 -o orderer.hypertest.com:7050 
+peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 1 -o orderer.hypertest.com:7050 --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
 #После того как Org2 одобрит, нужно выполнить
 
-peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 1 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051
+peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem --channelID hypertest --name marbles --version 1.0 --sequence 1 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --tlsRootCertFiles /etc/hyperledger/msp/peerOrg1/tls/ca.crt --peerAddresses peer0.org2.hypertest.com:7051 --tlsRootCertFiles /etc/hyperledger/msp/peerOrg2/tls/ca.crt 
 
 peer lifecycle chaincode queryapproved -C hypertest -n marbles --sequence 1
 

@@ -1,5 +1,5 @@
 
-##----------------------Peer node 1---------------------- SampleConsortium jdQGepH9bw9a0BndjkLG
+##----------------------Peer node 2---------------------- SampleConsortium jdQGepH9bw9a0BndjkLG
 sudo apt-get update
 sudo apt-get -y upgrade
 sudo apt-get -y install git
@@ -17,6 +17,8 @@ sudo mkdir -p /etc/hyperledger/{configtx,fabric,config,msp}
 sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg2,users}
 
 sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org2.hypertest.com/peers/peer0.org2.hypertest.com/* /etc/hyperledger/msp/peerOrg2/
+
+sudo rsync -r $USER@$ADMIN_IP:/etc/hyperledger/msp/orderer /etc/hyperledger/msp/
 
 sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org2.hypertest.com/users/ /etc/hyperledger/msp/users
 
@@ -81,15 +83,22 @@ echo 'export CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin\@org2.hype
 echo 'export CORE_PEER_LOCALMSPID=Org2MSP' | tee -a ~/.bashrc
 echo 'export CORE_PEER_ADDRESS=peer0.org2.hypertest.com:7051' | tee -a ~/.bashrc
 echo 'export CORE_PEER_ID=peer0.org2.hypertest.com' | tee -a ~/.bashrc
+echo 'export CERT=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem' | tee -a ~/.bashrc
+
 source ~/.bashrc
+
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/msp/peerOrg2/tls/server.crt
+export CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/msp/peerOrg2/tls/server.key
+export CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/msp/peerOrg2/tls/ca.crt
+
 
 #peer channel create -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledger/configtx/hypertest.tx
 
-peer channel join -b hypertest.block
+peer channel join -o orderer.hypertest.com:7050  -b hypertest.block  --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
-peer channel update -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledger/configtx/Org2MSPanchors.tx
+peer channel update -o orderer.hypertest.com:7050 -c hypertest -f /etc/hyperledger/configtx/Org2MSPanchors.tx  --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
-peer channel fetch 0 hypertest.block -c hypertest -o orderer.hypertest.com:7050
 
 cd hlf_2.2_docker_free/no_tls/chaincode/org2/packaging
 tar cfz code.tar.gz connection.json
@@ -97,16 +106,16 @@ tar cfz marbles-org2.tgz code.tar.gz metadata.json
 
 peer lifecycle chaincode install marbles-org2.tgz
 
-export CHAINCODE_CCID=marbles:410625b25b51d4088dd3f62f738f13dee4cb03fd19be74b60298dc1c8b3722b5
+export CHAINCODE_CCID=marbles:d9d3028568158137b32007f23a71683df70c66cc86f88f20f1dcf46791b455c3
 export CHAINCODE_ADDRESS=peer0.org2.hypertest.com:7052
 
 
 #peer lifecycle chaincode install marbles-org2.tgz
-peer lifecycle chaincode queryinstalled --peerAddresses peer0.org2.hypertest.com:7051
+peer lifecycle chaincode queryinstalled
 
-peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --version 1.0 --init-required --package-id ${CHAINCODE_CCID} --sequence 1 -o orderer.hypertest.com:7050
+peer lifecycle chaincode approveformyorg --channelID hypertest --name marbles --version 1.0 --init-required --package-id ${CHAINCODE_CCID} --sequence 1 -o orderer.hypertest.com:7050 --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
-peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 1 -o orderer.hypertest.com:7050 
+peer lifecycle chaincode checkcommitreadiness --channelID hypertest --name marbles --version 1.0 --init-required --sequence 1 -o orderer.hypertest.com:7050  --tls true --cafile=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.hypertest.com-cert.pem
 
 #peer lifecycle chaincode commit -o orderer.hypertest.com:7050 --channelID hypertest --name marbles --version 1.0 --sequence 1 --init-required --peerAddresses peer0.org1.hypertest.com:7051 --peerAddresses peer0.org2.hypertest.com:7051
 

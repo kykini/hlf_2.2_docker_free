@@ -5,32 +5,32 @@ sudo apt-get -y upgrade
 sudo apt-get -y install git
 sudo apt-get -y install build-essential
 
-export ADMIN_IP=192.168.129.145
-export PEER_1_IP=192.168.164.184
-export PEER_2_IP=192.168.163.36
+export ORDERER_IP=172.105.245.27
+export PEER_1_IP=172.105.247.29
+export PEER_2_IP=172.105.245.29
 
-echo "$ADMIN_IP orderer.hypertest.com" | sudo tee -a /etc/hosts
+echo "$ORDERER_IP orderer.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_1_IP peer0.org1.hypertest.com" | sudo tee -a /etc/hosts
 echo "$PEER_2_IP peer0.org2.hypertest.com" | sudo tee -a /etc/hosts
 
 sudo mkdir -p /etc/hyperledger/{configtx,fabric,config,msp}
 sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg2,users}
 
-sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org2.hypertest.com/peers/peer0.org2.hypertest.com/* /etc/hyperledger/msp/peerOrg2/
+sudo rsync -r $USER@$ORDERER_IP:/root/fabric/crypto-config/peerOrganizations/org2.hypertest.com/peers/peer0.org2.hypertest.com/* /etc/hyperledger/msp/peerOrg2/
 
-sudo rsync -r $USER@$ADMIN_IP:/root/fabric/crypto-config/peerOrganizations/org2.hypertest.com/users/ /etc/hyperledger/msp/users
+sudo rsync -r $USER@$ORDERER_IP:/root/fabric/crypto-config/peerOrganizations/org2.hypertest.com/users/ /etc/hyperledger/msp/users
 
-sudo rsync -r $USER@$ADMIN_IP:/etc/hyperledger/fabric/msp/ /etc/hyperledger/fabric/msp
+sudo rsync -r $USER@$ORDERER_IP:/etc/hyperledger/fabric/msp/ /etc/hyperledger/fabric/msp
 
-#sudo scp $USER@$ADMIN_IP:/root/fabric/fabric-samples/config/* /etc/hyperledger/configtx/
+#sudo scp $USER@$ORDERER_IP:/root/fabric/fabric-samples/config/* /etc/hyperledger/configtx/
 
-sudo scp $USER@$ADMIN_IP:/usr/local/bin/peer /usr/local/bin
+sudo scp $USER@$ORDERER_IP:/usr/local/bin/peer /usr/local/bin
 
-sudo scp $USER@$ADMIN_IP:/etc/hyperledger/fabric/core_org2.yaml /etc/hyperledger/fabric/
+sudo scp $USER@$ORDERER_IP:/etc/hyperledger/fabric/core_org2.yaml /etc/hyperledger/fabric/
 
-sudo scp $USER@$ADMIN_IP:/etc/hyperledger/configtx/hypertest.tx /etc/hyperledger/configtx/hypertest.tx
+sudo scp $USER@$ORDERER_IP:/etc/hyperledger/configtx/hypertest.tx /etc/hyperledger/configtx/hypertest.tx
 
-sudo scp $USER@$ADMIN_IP:/etc/hyperledger/configtx/Org2MSPanchors.tx /etc/hyperledger/configtx/Org2MSPanchors.tx
+sudo scp $USER@$ORDERER_IP:/etc/hyperledger/configtx/Org2MSPanchors.tx /etc/hyperledger/configtx/Org2MSPanchors.tx
 
 sudo scp $USER@$PEER_1_IP:/root/hypertest.block /root/hypertest.block
 

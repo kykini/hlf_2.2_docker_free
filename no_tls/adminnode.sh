@@ -6,9 +6,9 @@
 # Use is subject to license terms.
 #
 
-export ADMIN_IP=192.168.129.145
-export PEER_1_IP=192.168.164.184
-export PEER_2_IP=192.168.163.36
+export ORDERER_IP=172.105.245.27
+export PEER_1_IP=172.105.247.29
+export PEER_2_IP=172.105.245.29
 export NETWORK=hypertest.com
 export CHANNEL_NAME=hypertest
 
@@ -34,7 +34,7 @@ sudo apt-get -y install build-essential
 
 rm go1.15.linux-amd64.tar.gz
 
-echo "$ADMIN_IP orderer.${NETWORK}" | sudo tee -a /etc/hosts
+echo "$ORDERER_IP orderer.${NETWORK}" | sudo tee -a /etc/hosts
 echo "$PEER_1_IP peer0.org1.${NETWORK}" | sudo tee -a /etc/hosts
 echo "$PEER_2_IP peer0.org2.${NETWORK}" | sudo tee -a /etc/hosts
 

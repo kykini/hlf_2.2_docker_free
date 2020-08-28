@@ -38,10 +38,11 @@ echo "$ADMIN_IP orderer.${NETWORK}" | sudo tee -a /etc/hosts
 echo "$PEER_1_IP peer0.org1.${NETWORK}" | sudo tee -a /etc/hosts
 echo "$PEER_2_IP peer0.org2.${NETWORK}" | sudo tee -a /etc/hosts
 
+
 mkdir ~/fabric && cd ~/fabric
 #curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.2.0 1.4.7
 #sudo cp ~/fabric/fabric-samples/bin/* /usr/local/bin/
-cp ../hlf_2.2_docker_free/no_tls/bin/* /usr/local/bin/
+cp ../hlf_2.2_docker_free/tls/bin/* /usr/local/bin/
 
 
 #go get -u github.com/hyperledger/fabric-ca/cmd/...
@@ -50,24 +51,24 @@ cp ../hlf_2.2_docker_free/no_tls/bin/* /usr/local/bin/
 sudo mkdir -p /etc/hyperledger/{configtx,fabric,config,msp}
 sudo mkdir -p /etc/hyperledger/msp/{orderer,peerOrg1,peerOrg2,users} 
 
-cp -R ../hlf_2.2_docker_free/no_tls/orderer-config/* /etc/hyperledger/fabric/
+cp -R ../hlf_2.2_docker_free/tls/orderer-config/* /etc/hyperledger/fabric/
 
-cryptogen generate --config=../hlf_2.2_docker_free/no_tls/crypto-config.yaml
+cryptogen generate --config=../hlf_2.2_docker_free/tls/crypto-config.yaml
 
 mkdir config
 
-cp ../hlf_2.2_docker_free/no_tls/configtx.yaml .
-cp ../hlf_2.2_docker_free/no_tls/fabric-ca.service .
-cp ../hlf_2.2_docker_free/no_tls/fabric-orderer.service .
+cp ../hlf_2.2_docker_free/tls/configtx.yaml .
+cp ../hlf_2.2_docker_free/tls/fabric-ca.service .
+cp ../hlf_2.2_docker_free/tls/fabric-orderer.service .
 
 configtxgen -profile TwoOrgsOrdererGenesis -outputBlock ./config/genesis.block -channelID ${CHANNEL_NAME}-sys-channel
 configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./config/${CHANNEL_NAME}.tx -channelID ${CHANNEL_NAME}
 configtxgen -asOrg Org1MSP -channelID ${CHANNEL_NAME} -profile TwoOrgsChannel -outputAnchorPeersUpdate ./config/Org1MSPanchors.tx
 configtxgen -asOrg Org2MSP -channelID ${CHANNEL_NAME} -profile TwoOrgsChannel -outputAnchorPeersUpdate ./config/Org2MSPanchors.tx
 
-#sudo cp config/* /etc/hyperledger/configtx/
+cp config/* /etc/hyperledger/configtx/
 
-sudo cp -r ../hlf_2.2_docker_free/no_tls/external-builder /etc/hyperledger/
+sudo cp -r ../hlf_2.2_docker_free/tls/external-builder /etc/hyperledger/
 sudo cp -r crypto-config/ordererOrganizations/${NETWORK}/orderers/orderer.${NETWORK}/* /etc/hyperledger/msp/orderer/
 
 sudo cp -r crypto-config/peerOrganizations/org1.${NETWORK}/peers/peer0.org1.${NETWORK}/* /etc/hyperledger/msp/peerOrg1/
@@ -82,9 +83,9 @@ sudo cp -r crypto-config/peerOrganizations/org2.${NETWORK}/users/* /etc/hyperled
 #sudo systemctl enable fabric-ca.service
 #sudo systemctl start fabric-ca.service
 
-sudo mv fabric-orderer.service /etc/systemd/system/
+sudo cp fabric-orderer.service /etc/systemd/system/
 sudo systemctl enable fabric-orderer.service
 sudo systemctl start fabric-orderer.service
 
-systemctl status fabric-ca.service
+#systemctl status fabric-ca.service
 systemctl status fabric-orderer.service
